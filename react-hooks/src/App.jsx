@@ -1,34 +1,34 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
+import {useReducer} from "react";
 
+const countReducer = (state, action) => {
+    switch (action.type) {
+        case 'ADD':
+            return {
+                count: state.count + 1,
+                isOdd: state.count % 2 === 0
+            }
+        case 'REMOVE':
+            return {
+                count: state.count - 1,
+                isOdd: state.count % 2 === 0
+            }
+    }
+}
 const App = () => {
-    const [isLoading, setIsLoading] = useState(true)
-    const [todos, setTodos] = useState([])
-
-    useEffect(() => {
-        async function fetchTodos() {
-            const {data: todos} = await axios.get('https://jsonplaceholder.typicode.com/todos')
-            setTodos(todos)
-            setIsLoading(false)
-        }
-
-        fetchTodos()
-
-    }, [])
-
+    const [state, dispatchCount] = useReducer(countReducer, {
+        count: 0,
+        isOdd: false
+    })
     return (
-        <>
-            {isLoading ? 'Loading' : todos.map(todo => (
-                <div className="card" key={todo.id}>
-                    <div className="card-body">
-                        {todo.title}
-                    </div>
-                </div>
-            ))}
-        </>
+        <div className="container my-4 d-flex flex-column">
+            <h1>{state.count}</h1>
+            <p>{state.isOdd ? 'Odd' : 'Even'}</p>
+            <div>
+                <button className="btn btn-danger mx-2" onClick={() => dispatchCount({type: 'REMOVE'})}>-</button>
+                <button className="btn btn-success" onClick={() => dispatchCount({type: 'ADD'})}>+</button>
+            </div>
+        </div>
     )
 }
 
-
 export default App
-
