@@ -1,18 +1,30 @@
 import {useEffect, useState} from "react";
+import axios from "axios";
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(true)
+    const [todos, setTodos] = useState([])
+
     useEffect(() => {
-        setTimeout(() => {
+        async function fetchTodos() {
+            const {data: todos} = await axios.get('https://jsonplaceholder.typicode.com/todos')
+            setTodos(todos)
             setIsLoading(false)
-        }, 2000)
-    })
+        }
+
+        fetchTodos()
+
+    }, [])
 
     return (
         <>
-            {
-                isLoading ? 'Loading' : 'Data was fetched'
-            }
+            {isLoading ? 'Loading' : todos.map(todo => (
+                <div className="card" key={todo.id}>
+                    <div className="card-body">
+                        {todo.title}
+                    </div>
+                </div>
+            ))}
         </>
     )
 }
